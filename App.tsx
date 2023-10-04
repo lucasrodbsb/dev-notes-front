@@ -1,20 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Provider } from "react-redux";
+import { store } from "./src/services/redux/store";
+import {} from "redux-persist";
+import { NavigationContainer } from "@react-navigation/native";
+import "react-native-gesture-handler";
+import { registerRootComponent } from "expo";
+import React from "react";
+import CustomProvider from "./src/components/CustomProvider";
+import LoaderStack from "./src/stacks/LoaderStack";
+import Toast from 'react-native-toast-message';
+import {toastConfig} from "./src/services/toast-message/config"
+
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <NavigationContainer>
+        <CustomProvider>
+          <LoaderStack/>
+          {/* <AuthStack /> */}
+          {/* <DrawerNavigation/> */}
+        </CustomProvider>
+      </NavigationContainer>
+      <Toast position="bottom" config={toastConfig}/>
+    </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+registerRootComponent(App);
+
+{
+  /* <NavigationContainer>
+            <DrawerNavigation />
+          </NavigationContainer> */
+}

@@ -122,10 +122,16 @@ const ListScreen = ({
   React.useEffect(() => {
     setUserNotesFiltered(
       userNotes?.filter((item, index) => {
-        return !!item.title
-          .trim()
-          .toLocaleLowerCase()
-          .includes(searchBar.trim().toLocaleLowerCase());
+        return (
+          !!item.title
+            .trim()
+            .toLocaleLowerCase()
+            .includes(searchBar.trim().toLocaleLowerCase()) ||
+          !!item.body
+            .trim()
+            .toLocaleLowerCase()
+            .includes(searchBar.trim().toLocaleLowerCase())
+        );
       }) ?? []
     );
   }, [searchBar]);

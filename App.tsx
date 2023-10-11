@@ -1,8 +1,7 @@
+import "react-native-gesture-handler";
 import { Provider } from "react-redux";
 import { store } from "./src/services/redux/store";
-import {} from "redux-persist";
 import { NavigationContainer } from "@react-navigation/native";
-import "react-native-gesture-handler";
 import { registerRootComponent } from "expo";
 import React from "react";
 import CustomProvider from "./src/components/CustomProvider";
@@ -17,8 +16,6 @@ export default function App() {
       <NavigationContainer>
         <CustomProvider>
           <LoaderStack/>
-          {/* <AuthStack /> */}
-          {/* <DrawerNavigation/> */}
         </CustomProvider>
       </NavigationContainer>
       <Toast position="bottom" config={toastConfig}/>

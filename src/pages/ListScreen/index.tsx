@@ -7,7 +7,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React from "react";
-import { ParamListBase, useFocusEffect, useNavigation } from "@react-navigation/native";
+import {
+  ParamListBase,
+  useFocusEffect,
+  useNavigation,
+} from "@react-navigation/native";
 import { StackNavigation, StackTypes } from "../../stacks/MainStack";
 import Header from "../../components/Header";
 import { Button } from "@react-native-material/core";
@@ -18,14 +22,16 @@ import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
 import { signOut } from "../../services/redux/slices/authSlice";
 import { storage } from "../../services/mmkv";
 import { useGetAllNotesByUserIDQuery } from "../../services/redux/api/notesApi";
-import { SearchBar } from "react-native-elements";
+import { Avatar, SearchBar } from "react-native-elements";
 import Skeletons from "../../components/Skeletons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { StackScreenProps } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
 
-const ListScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) => {
-
+const ListScreen = ({
+  navigation,
+  route,
+}: StackScreenProps<StackNavigation>) => {
   const drawerNavigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -85,7 +91,6 @@ const ListScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) =>
       <StatusBar style="light" />
       <ScrollView style={{ backgroundColor: "#141414" }}>
         <SafeAreaView style={styles.container}>
-          {/* <Button title={'Editar Nota'} color='#fff' style={{width: 150}} onPress={()=> navigation.navigate("EditNote")}/> */}
           <View
             style={{
               display: "flex",
@@ -130,7 +135,6 @@ const ListScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) =>
               </Text>
             )}
           </View>
-          <Button title={"sair"} onPress={handleLogOut} />
         </SafeAreaView>
       </ScrollView>
       <SpeedDial
@@ -142,6 +146,15 @@ const ListScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) =>
         color={"#ffd52e"}
       >
         <SpeedDial.Action
+          icon={{ name: "logout", color: "#414141" }}
+          title="Sair"
+          onPress={() => {
+            handleLogOut();
+            setIsOpen(false);
+          }}
+          color={"#ffd52e"}
+        />
+        <SpeedDial.Action
           icon={{ name: "add", color: "#414141" }}
           title="Criar Nota"
           onPress={() => {
@@ -150,7 +163,6 @@ const ListScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) =>
           }}
           color={"#ffd52e"}
         />
-        <></>
       </SpeedDial>
     </>
   );
@@ -166,8 +178,3 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
 });
-
-{
-  /* <Button title='Editar Nota' onPress={()=> navigate.navigate('EditNote')} />
-<Button title="abrir drawer" /> */
-}

@@ -7,7 +7,8 @@ export const notesApi = createApi({
   reducerPath: "notesApi",
   baseQuery: fetchBaseQuery({
     // baseUrl: `http://localhost:3001/`,
-    baseUrl: `http://192.168.118.112:3001/`,
+    // baseUrl: `http://192.168.118.112:3001/`,
+    baseUrl: `http://192.168.15.5:3001/`,
     
     prepareHeaders: async (headers) => {
       const token = await AsyncStorage.getItem("token");

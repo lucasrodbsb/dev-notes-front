@@ -4,7 +4,8 @@ export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     // baseUrl: `http://localhost:3001/`, //ipexterno ifconfig
-    baseUrl: `http://192.168.118.112:3001/`
+    // baseUrl: `http://192.168.118.112:3001/`
+    baseUrl: `http://192.168.15.5:3001/`
   }),
   endpoints: (builder) => ({
     loginUser: builder.mutation<

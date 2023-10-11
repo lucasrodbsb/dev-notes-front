@@ -117,6 +117,9 @@ const ListScreen = ({
     if (userNotesFiltered?.length < 1 && userNotes?.length) {
       setUserNotesFiltered(userNotes);
     }
+    if (userNotes) {
+      setUserNotesFiltered(userNotes);
+    }
   }, [userNotes]);
 
   React.useEffect(() => {

@@ -6,7 +6,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const notesApi = createApi({
   reducerPath: "notesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://localhost:3001/`,
+    // baseUrl: `http://localhost:3001/`,
+    baseUrl: `http://192.168.118.112:3001/`,
+    
     prepareHeaders: async (headers) => {
       const token = await AsyncStorage.getItem("token");
       if (!!token) {

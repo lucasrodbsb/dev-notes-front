@@ -11,6 +11,7 @@ import MainStack from "./MainStack";
 import DrawerNavigation from "./DrawerNavigation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppSelector } from "../hooks/reduxHooks";
+import { StackScreenProps } from "@react-navigation/stack";
 
 export type StackNavigation = {
   [key: string]: undefined;
@@ -18,9 +19,9 @@ export type StackNavigation = {
 
 export type StackTypes = NativeStackNavigationProp<StackNavigation>;
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<StackNavigation>();
 
-const AuthStack = () => {
+const AuthStack = ({navigation, route}: StackScreenProps<StackNavigation>) => {
   const userData = useAppSelector((store) => store.authReducer.user);
 
   return (
@@ -32,6 +33,7 @@ const AuthStack = () => {
         component={WelcomeScreen}
         options={{
           title: "WelcomeScreen",
+          gestureEnabled: false
         }}
       />
       <Stack.Screen
@@ -39,6 +41,7 @@ const AuthStack = () => {
         component={SignInScreen}
         options={{
           title: "SignIn",
+          
         }}
       />
     </Stack.Navigator>

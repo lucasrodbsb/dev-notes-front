@@ -26,9 +26,10 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { StackNavigation } from "../../stacks/MainStack";
 import { StatusBar } from "expo-status-bar";
 
-
-const CreateNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) => {
-
+const CreateNoteScreen = ({
+  navigation,
+  route,
+}: StackScreenProps<StackNavigation>) => {
   const drawerNavigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
 
   type FormData = {
@@ -59,9 +60,9 @@ const CreateNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigatio
     },
   });
 
-  const [ addNote, addNoteResults ] = useAddNoteMutation();
+  const [addNote, addNoteResults] = useAddNoteMutation();
 
-  const userData = useAppSelector((store)=> store.authReducer.user)
+  const userData = useAppSelector((store) => store.authReducer.user);
 
   const {
     control,
@@ -76,32 +77,37 @@ const CreateNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigatio
       title: data.title,
       noteBody: data.noteBody,
       user_id: userData?.user_Id ?? 0,
-      datetime: moment().valueOf()
+      datetime: moment().valueOf(),
     })
-    .unwrap()
-    .then((response)=>{
-      Toast.show({
-        type: "success",
-        text1: "Êxito!",
-        text2: response.message
-      });
+      .unwrap()
+      .then((response) => {
+        Toast.show({
+          type: "success",
+          text1: "Êxito!",
+          text2: response.message,
+        });
 
-      navigation.goBack()
-
-    }).catch((err)=>{
-      Toast.show({
-        type: "error",
-        text1: "Erro!",
-        text2: addNoteResults.data?.message
+        navigation.goBack();
       })
-    })
+      .catch((err) => {
+        Toast.show({
+          type: "error",
+          text1: "Erro!",
+          text2: addNoteResults.data?.message,
+        });
+      });
   };
 
   return (
     <>
-      <Header title={"Criar nota"} openDrawer={() => drawerNavigation.openDrawer()} />
+      {/* <Header title={"Criar nota"} openDrawer={() => drawerNavigation.openDrawer()} /> */}
       <StatusBar style="light" />
-      <ScrollView style={{ backgroundColor: "#141414"}} contentContainerStyle={{paddingTop: 20}} bounces={false}>
+      <ScrollView
+        style={{ backgroundColor: "#141414" }}
+        contentContainerStyle={{ paddingTop: 20 }}
+        bounces={true}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <SafeAreaView style={styles.container}>
           <FormProvider {...methods}>
             <Controller
@@ -109,7 +115,7 @@ const CreateNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigatio
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
                   label="Título:"
-                  labelStyle={{padding:5, color: "#fff", fontWeight: "500"}}
+                  labelStyle={{ padding: 5, color: "#fff", fontWeight: "500" }}
                   InputComponent={TextInput}
                   inputStyle={{
                     color: "white",
@@ -125,7 +131,7 @@ const CreateNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigatio
                   errorStyle={{ color: "#f16868" }}
                   errorMessage={errors.title?.message}
                   inputContainerStyle={{ borderColor: "transparent" }}
-                  containerStyle={{paddingHorizontal: 0}}
+                  containerStyle={{ paddingHorizontal: 0 }}
                 />
               )}
               name="title"
@@ -134,16 +140,15 @@ const CreateNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigatio
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  // placeholder="Corpo da nota"
                   label="Corpo:"
-                  labelStyle={{padding:5, color: "#fff", fontWeight: "500"}}
+                  labelStyle={{ padding: 5, color: "#fff", fontWeight: "500" }}
                   secureTextEntry={false}
                   InputComponent={TextInput}
                   style={{
                     height: 400,
                     backgroundColor: "#282828",
                     borderRadius: 10,
-                    marginHorizontal: 0
+                    marginHorizontal: 0,
                   }}
                   inputStyle={{
                     color: "white",
@@ -158,29 +163,17 @@ const CreateNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigatio
                   errorMessage={errors.noteBody?.message}
                   multiline={true}
                   inputContainerStyle={{ borderColor: "transparent" }}
-                  containerStyle={{paddingHorizontal: 0}}
+                  containerStyle={{ paddingHorizontal: 0 }}
                 />
               )}
               name="noteBody"
             />
             <Button
               color="#fff"
-              style={{ marginTop: 20, }}
+              style={{ marginTop: 20 }}
               title={"Adicionar nota"}
-
               onPress={handleSubmit(submitForm)}
               variant="contained"
-            />
-            <Button
-              color="#fff"
-              style={{ marginTop: 50, }}
-              title={"Voltar"}
-
-              onPress={()=>{
-                methods.reset();
-                navigation.goBack()
-              }}
-              variant="text"
             />
           </FormProvider>
         </SafeAreaView>
@@ -199,4 +192,3 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
 });
-

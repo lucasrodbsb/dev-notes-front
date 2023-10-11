@@ -1,7 +1,7 @@
 import { View, StyleSheet, TextInput, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigation, StackTypes } from "../../stacks/MainStack";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackNavigationHelpers, StackScreenProps } from "@react-navigation/stack/lib/typescript/src/types";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Button } from "@react-native-material/core";
@@ -16,7 +16,7 @@ import { StatusBar } from "expo-status-bar";
 import { useAddNewUserMutation } from "../../services/redux/api/authApi";
 import Toast from "react-native-toast-message";
 
-const SignInScreen = ({ navigation, route }:  StackScreenProps<StackNavigation>) => {
+const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
 
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -175,8 +175,6 @@ const SignInScreen = ({ navigation, route }:  StackScreenProps<StackNavigation>)
 
         console.log(err);
       });
-
-    console.log(data);
   };
 
   return (

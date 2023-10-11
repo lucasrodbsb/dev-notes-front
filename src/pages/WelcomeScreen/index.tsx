@@ -1,6 +1,6 @@
 import { View, StyleSheet, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { StackTypes } from "../../stacks/MainStack";
+import { StackNavigation, StackTypes } from "../../stacks/MainStack";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Button } from "@react-native-material/core";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,9 +15,10 @@ import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
 import { storage } from "../../services/mmkv";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StackScreenProps } from "@react-navigation/stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-const WelcomeScreen = ({ navigation, route }: any) => {
-  const navigate = useNavigation<StackTypes>();
+const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const emailInput = React.createRef() as RefObject<PropsWithChildren<any>>;
   const passwordInput = React.createRef() as RefObject<PropsWithChildren<any>>;
@@ -83,7 +84,7 @@ const WelcomeScreen = ({ navigation, route }: any) => {
       .then(async (dataToken) => {
         try {
           await AsyncStorage.setItem("token", dataToken.token);
-          navigate.navigate("LoaderScreen");
+          navigation.navigate("LoaderScreen");
           Toast.show({
             type: "success",
             text1: "Êxito!",

@@ -11,8 +11,9 @@ import { setUserData, User } from "../../services/redux/slices/authSlice";
 import { StackScreenProps } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-const LoaderScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) => {
+const LoaderScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const dispatch = useAppDispatch();
@@ -59,7 +60,6 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: "#141414",
-    // backgroundColor: "#4a1313",
 
     paddingHorizontal: 15,
     paddingBottom: 15,

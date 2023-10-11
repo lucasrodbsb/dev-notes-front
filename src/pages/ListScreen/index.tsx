@@ -25,20 +25,50 @@ import { useGetAllNotesByUserIDQuery } from "../../services/redux/api/notesApi";
 import { Avatar, SearchBar } from "react-native-elements";
 import Skeletons from "../../components/Skeletons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
-import { StackScreenProps } from "@react-navigation/stack";
+import {
+  StackNavigationOptions,
+  StackScreenProps,
+} from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Note as noteType } from "../../types/notesTypes";
+import { useController, useForm } from "react-hook-form";
+import { SearchBarCommands } from "react-native-screens";
 
 const ListScreen = ({
   navigation,
   route,
-}: StackScreenProps<StackNavigation>) => {
+}: NativeStackScreenProps<StackNavigation>) => {
   const drawerNavigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const dispatch = useAppDispatch();
 
+  const [userNotesFiltered, setUserNotesFiltered] = React.useState<noteType[]>(
+    []
+  );
+  const [searchBar, setSearchBar] = React.useState<string>("");
+
+  const searchBarRef = React.useRef() as React.RefObject<SearchBarCommands>;
+
+  //   type SearchType = {
+  //     searchBar: string
+  //   }
+
   const userData = useAppSelector((store) => store.authReducer.user);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        placeholder: "Pesquisar Nota",
+        cancelButtonText: "Cancelar",
+        onChangeText: (event) => {
+          setSearchBar(event.nativeEvent.text);
+        },
+      },
+    });
+  }, [navigation]);
 
   const {
     data: userNotes,
@@ -62,7 +92,7 @@ const ListScreen = ({
         text: "Sim",
         onPress: async () => {
           dispatch(signOut()), navigation.navigate("LoaderScreen");
-          await AsyncStorage.removeItem("token")
+          await AsyncStorage.removeItem("token");
         },
       },
       {
@@ -72,7 +102,7 @@ const ListScreen = ({
   };
 
   const notes =
-    userNotes?.map((item, index) => (
+    userNotesFiltered?.map((item, index) => (
       <Note
         key={index + 1}
         count={index}
@@ -83,14 +113,29 @@ const ListScreen = ({
       />
     )) ?? [];
 
+  React.useEffect(() => {
+    if (userNotesFiltered?.length < 1 && userNotes?.length) {
+      setUserNotesFiltered(userNotes);
+    }
+  }, [userNotes]);
+
+  React.useEffect(() => {
+    setUserNotesFiltered(
+      userNotes?.filter((item, index) => {
+        return !!item.title
+          .trim()
+          .toLocaleLowerCase()
+          .includes(searchBar.trim().toLocaleLowerCase());
+      }) ?? []
+    );
+  }, [searchBar]);
   return (
     <>
-      <Header
-        title={`Olá, ${firstName(userData?.full_name ?? "")}`}
-        openDrawer={() => drawerNavigation.openDrawer()}
-      />
       <StatusBar style="light" />
-      <ScrollView style={{ backgroundColor: "#141414" }}>
+      <ScrollView
+        style={{ backgroundColor: "#141414" }}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <SafeAreaView style={styles.container}>
           <View
             style={{

@@ -28,8 +28,9 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { StackNavigation } from "../../stacks/MainStack";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { StatusBar } from "expo-status-bar";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-const EditNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) => {
+const EditNoteScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
 
   const drawerNavigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
 
@@ -112,14 +113,10 @@ const EditNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigation>
   return (
     <>
     <StatusBar style="light" />
-      <Header
-        title={"Editar nota"}
-        openDrawer={() => drawerNavigation.openDrawer()}
-      />
       <ScrollView
         style={{ backgroundColor: "#141414" }}
         contentContainerStyle={{ paddingTop: 20 }}
-        bounces={false}
+        contentInsetAdjustmentBehavior="automatic"
       >
         <SafeAreaView style={styles.container}>
           {/* <Button title={'Editar Nota'} color='#fff' style={{width: 150}} onPress={()=> navigation.navigate("EditNote")}/> */}
@@ -128,7 +125,6 @@ const EditNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigation>
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  // placeholder="Título da nota"
                   label="Título:"
                   labelStyle={{ padding: 5, color: "#fff", fontWeight: "500" }}
                   InputComponent={TextInput}
@@ -191,18 +187,7 @@ const EditNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigation>
               onPress={handleSubmit(submitForm)}
               variant="contained"
             />
-            <Button
-              color="#fff"
-              style={{ marginTop: 50 }}
-              title={"Voltar"}
-              onPress={() => {
-                methods.reset();
-                navigation.goBack();
-              }}
-              variant="text"
-            />
           </FormProvider>
-          {/* <Button title={"Voltar"} onPress={() => navig.goBack()} /> */}
         </SafeAreaView>
       </ScrollView>
     </>

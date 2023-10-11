@@ -36,7 +36,7 @@ const CustomProvider = ({children}: Props) => {
   },[])
 
   return (
-    children
+      children
     )
 };
 

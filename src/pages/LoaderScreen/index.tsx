@@ -10,24 +10,24 @@ import jwtDecode from "jwt-decode";
 import { setUserData, User } from "../../services/redux/slices/authSlice";
 import { StackScreenProps } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoaderScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) => {
-  const navigate = useNavigation<StackTypes>();
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const dispatch = useAppDispatch();
 
   useFocusEffect(() => {
-    let activeToken = storage.getString("token");
-    let decoded: User;
-
-    if (activeToken == undefined) {
-      navigate.navigate("LoginScreen");
-    } else {
-      decoded = jwtDecode(activeToken);
-      dispatch(setUserData(decoded));
-      navigate.navigate("LogedScreen");
-    }
+    (async ()=>{
+      let activeToken = await AsyncStorage.getItem("token");
+      if(!!!activeToken){
+        navigation.navigate("LoginScreen");
+      } else {
+        let decoded: User = jwtDecode(activeToken) ?? ""
+        dispatch(setUserData(decoded))
+        navigation.navigate("LogedScreen")
+      }
+    })()
   });
 
   return (

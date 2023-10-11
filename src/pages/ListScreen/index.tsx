@@ -27,6 +27,7 @@ import Skeletons from "../../components/Skeletons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { StackScreenProps } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ListScreen = ({
   navigation,
@@ -61,7 +62,7 @@ const ListScreen = ({
         text: "Sim",
         onPress: async () => {
           dispatch(signOut()), navigation.navigate("LoaderScreen");
-          storage.delete("token");
+          await AsyncStorage.removeItem("token")
         },
       },
       {

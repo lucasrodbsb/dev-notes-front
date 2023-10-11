@@ -14,6 +14,7 @@ import { useLoginUserMutation } from "../../services/redux/api/authApi";
 import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
 import { storage } from "../../services/mmkv";
 import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WelcomeScreen = ({ navigation, route }: any) => {
   const navigate = useNavigation<StackTypes>();
@@ -79,17 +80,23 @@ const WelcomeScreen = ({ navigation, route }: any) => {
       password: data.password,
     })
       .unwrap()
-      .then((dataToken) => {
-        storage.set("token", dataToken.token);
-        console.log(storage.getString("token"));
-
-        navigate.navigate("LoaderScreen");
-
-        Toast.show({
-          type: "success",
-          text1: "Êxito!",
-          text2: `Usuário logado com sucesso!`,
-        });
+      .then(async (dataToken) => {
+        try {
+          await AsyncStorage.setItem("token", dataToken.token);
+          navigate.navigate("LoaderScreen");
+          Toast.show({
+            type: "success",
+            text1: "Êxito!",
+            text2: `Usuário logado com sucesso!`,
+          });
+        } catch (error) {
+          Toast.show({
+            type: "error",
+            text1: "Erro!",
+            text2: `${JSON.stringify(error)}`,
+          });
+        }
+        console.log(await AsyncStorage.getItem("token"));
       })
       .catch((loginError) => {
         Toast.show({

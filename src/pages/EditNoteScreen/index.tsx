@@ -79,8 +79,8 @@ const EditNoteScreen = ({ navigation, route }: NativeStackScreenProps<StackNavig
       note_id: route.params?.note_id ?? 0,
       user_id: userData?.user_Id ?? 0,
       datetime: moment().valueOf(),
-      noteBody: data.noteBody,
-      title: data.title,
+      noteBody: data.noteBody.trim(),
+      title: data.title.trim(),
     })
       .unwrap()
       .then((response) => {
@@ -119,7 +119,6 @@ const EditNoteScreen = ({ navigation, route }: NativeStackScreenProps<StackNavig
         contentInsetAdjustmentBehavior="automatic"
       >
         <SafeAreaView style={styles.container}>
-          {/* <Button title={'Editar Nota'} color='#fff' style={{width: 150}} onPress={()=> navigation.navigate("EditNote")}/> */}
           <FormProvider {...methods}>
             <Controller
               control={control}
@@ -151,7 +150,6 @@ const EditNoteScreen = ({ navigation, route }: NativeStackScreenProps<StackNavig
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  // placeholder="Corpo da nota"
                   label="Corpo:"
                   labelStyle={{ padding: 5, color: "#fff", fontWeight: "500" }}
                   secureTextEntry={false}

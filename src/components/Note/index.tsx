@@ -1,23 +1,15 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  Pressable,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import React from "react";
-import { Skeleton, Dialog, FAB } from "@rneui/themed";
 import { Button } from "@react-native-material/core";
-import { Badge, Overlay } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import moment from "moment";
 import { useDeleteNoteByIdMutation } from "../../services/redux/api/notesApi";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StackTypes } from "../../stacks/MainStack";
+import CustomBottomModal from "../CustomBottomModal";
+import * as Clipboard from "expo-clipboard";
 
 type Props = {
   title: string;
@@ -25,6 +17,7 @@ type Props = {
   count: number;
   datetime: number;
   noteId: number;
+  userName: string;
 };
 
 const Note = ({
@@ -33,93 +26,133 @@ const Note = ({
   count = 1,
   datetime,
   noteId,
+  userName,
 }: Props) => {
   const [isVisible, setIsVisible] = React.useState<boolean>(false);
-  const navig = useNavigation<StackTypes>()
+  const navig = useNavigation<StackTypes>();
 
   const [deleteNoteById, responseDeleteNoteById] = useDeleteNoteByIdMutation();
+
+  const copyTextToClipboard = async () => {
+    await Clipboard.setStringAsync(
+      `*${title.trim()}*\n\n${body.trim()}\n---------------------- \nAutor:\n${userName.trim()}`
+    );
+  };
 
   return (
     <View style={styles.noteContainer}>
       <View style={styles.noteHeader}>
-        <Text style={styles.noteTitle}>{title}</Text>
-        <View style={styles.noteBadge}>
-          {/* <Text style={styles.noteBadge.text}>{count++}</Text> */}
-          <Pressable style={{borderRadius: 50}}>
-            <Icon
-              name="dots-horizontal"
-              size={20}
-              color="#414141"
-              onPress={() => {
-                setIsVisible(!isVisible);
-              }}
-            />
-          </Pressable>
+        <Text numberOfLines={1} style={styles.noteTitle}>{title}</Text>
+        <View style={{ display: "flex", flexDirection: "row" }}>
+          <View style={styles.noteBadge}>
+            <Pressable style={{ borderRadius: 50 }}>
+              <Icon
+                name="dots-horizontal"
+                size={20}
+                color="#414141"
+                onPress={() => {
+                  setIsVisible(!isVisible);
+                }}
+              />
+            </Pressable>
+          </View>
         </View>
       </View>
-      <ScrollView style={styles.noteBody}>
+      <ScrollView style={styles.noteBody} contentInsetAdjustmentBehavior="scrollableAxes" bouncesZoom>
         <Text>{body}</Text>
         <View style={styles.noteBody.placeholder}></View>
       </ScrollView>
-      <Overlay
-        isVisible={isVisible}
-        onBackdropPress={() => {
+      <CustomBottomModal
+        show={isVisible}
+        close={() => {
           setIsVisible(!isVisible);
         }}
-        overlayStyle={{
-          backgroundColor: "#282828",
-          width: "80%",
-          gap: 15,
-          borderRadius: 10,
-        }}
+        bgColor="#282828"
       >
-        <View>
-          <Text style={{ color: "#ffffff", fontSize: 20, marginBottom: 5 }}>
-            {title}
-          </Text>
-          <Text style={{ color: "#ffffff80", fontSize: 15 }}>
-            {moment(datetime).format("DD/MM/YYYY - HH:mm:ss")}
-          </Text>
-        </View>
-
-        <Button
-          title={"Editar"}
-          color="#fff"
-          onPress={() => {
-            navig.navigate("EditNote", {
-              note_id: noteId,
-              note_body: body,
-              note_title: title
-            });
-            setIsVisible(!isVisible);
+        <View
+          style={{
+            paddingVertical: 30,
+            display: "flex",
+            justifyContent: "center",
           }}
-          variant="contained"
-        />
-        <Button
-          title="Deletar"
-          color="red"
-          onPress={() => {
-            deleteNoteById({ note_id: +noteId ?? 0 })
-              .then(() => {
-                Toast.show({
-                  type: "success",
-                  text1: "Êxito!",
-                  text2: "Nota deletada com sucesso.",
+        >
+          <View style={{ gap: 5, marginBottom: 30, width: "100%" }}>
+            <Text
+              style={{ textAlign: "center", color: "#ffffff", fontSize: 30 }}
+            >
+              {title}
+            </Text>
+            <Text
+              style={{ color: "#ffffff80", fontSize: 15, textAlign: "center" }}
+            >
+              {`${moment(datetime).format("DD/MM/YYYY - HH:mm:ss")}`}
+            </Text>
+          </View>
+          <View style={{ gap: 15 }}>
+            <Button
+              title={"Editar"}
+              color="#fff"
+              onPress={() => {
+                navig.navigate("EditNote", {
+                  note_id: noteId,
+                  note_body: body,
+                  note_title: title,
                 });
                 setIsVisible(!isVisible);
-              })
-              .catch(() => {
-                Toast.show({
-                  type: "error",
-                  text1: "Erro!",
-                  text2: "Erro ao deletar nota.",
-                });
-              });
-          }}
-          variant="contained"
-          titleStyle={{ color: "#fff" }}
-        />
-      </Overlay>
+              }}
+              variant="contained"
+            />
+            <Button
+              title="Copiar"
+              color="#ffffff"
+              onPress={() => {
+                copyTextToClipboard()
+                  .then(() => {
+                    Toast.show({
+                      type: "success",
+                      text1: "Êxito!",
+                      text2: "Nota copiada para sua área de transferência.",
+                    });
+                    setIsVisible(!isVisible);
+                  })
+                  .catch(() => {
+                    Toast.show({
+                      type: "error",
+                      text1: "Erro!",
+                      text2: "Erro ao copiar nota.",
+                    });
+                  });
+              }}
+              variant="outlined"
+            />
+            <Button
+              title="Deletar"
+              color="red"
+              onPress={() => {
+                deleteNoteById({ note_id: +noteId ?? 0 })
+                  .then(() => {
+                    Toast.show({
+                      type: "success",
+                      text1: "Êxito!",
+                      text2: "Nota deletada com sucesso.",
+                    });
+                    setIsVisible(!isVisible);
+                  })
+                  .catch(() => {
+                    Toast.show({
+                      type: "error",
+                      text1: "Erro!",
+                      text2: "Erro ao deletar nota.",
+                    });
+                  });
+              }}
+              variant="contained"
+              titleStyle={{ color: "#fff" }}
+              style={{ marginTop: 20 }}
+            />
+          </View>
+        </View>
+      </CustomBottomModal>
     </View>
   );
 };
@@ -149,6 +182,7 @@ const styles = StyleSheet.create({
   noteTitle: {
     color: "#414141",
     fontWeight: "bold",
+    width: 130
   },
   noteBadge: {
     height: 25,

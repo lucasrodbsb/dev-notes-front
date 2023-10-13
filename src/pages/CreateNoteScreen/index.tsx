@@ -74,8 +74,8 @@ const CreateNoteScreen = ({
   const submitForm = async (data: FormData) => {
     let result;
     result = await addNote({
-      title: data.title,
-      noteBody: data.noteBody,
+      title: data.title.trim(),
+      noteBody: data.noteBody.trim(),
       user_id: userData?.user_Id ?? 0,
       datetime: moment().valueOf(),
     })
@@ -100,7 +100,6 @@ const CreateNoteScreen = ({
 
   return (
     <>
-      {/* <Header title={"Criar nota"} openDrawer={() => drawerNavigation.openDrawer()} /> */}
       <StatusBar style="light" />
       <ScrollView
         style={{ backgroundColor: "#141414" }}

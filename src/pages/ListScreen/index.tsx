@@ -9,11 +9,9 @@ import {
 import React from "react";
 import {
   ParamListBase,
-  useFocusEffect,
   useNavigation,
 } from "@react-navigation/native";
-import { StackNavigation, StackTypes } from "../../stacks/MainStack";
-import Header from "../../components/Header";
+import { StackNavigation } from "../../stacks/MainStack";
 import { Button } from "@react-native-material/core";
 import Note from "../../components/Note";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -50,12 +48,6 @@ const ListScreen = ({
   );
   const [searchBar, setSearchBar] = React.useState<string>("");
 
-  const searchBarRef = React.useRef() as React.RefObject<SearchBarCommands>;
-
-  //   type SearchType = {
-  //     searchBar: string
-  //   }
-
   const userData = useAppSelector((store) => store.authReducer.user);
 
   React.useLayoutEffect(() => {
@@ -74,24 +66,17 @@ const ListScreen = ({
     data: userNotes,
     isSuccess,
     isLoading,
-    isUninitialized,
-    currentData,
     refetch,
     error,
   } = useGetAllNotesByUserIDQuery((userData?.user_Id as number) ?? 0);
-
-  const firstName = (fullname: string) => {
-    let firstname = fullname;
-    firstname = fullname.split(" ").at(0) ?? "";
-    return firstname;
-  };
 
   const handleLogOut = () => {
     return Alert.alert("Sair", "Tem certeza que deseja sair?", [
       {
         text: "Sim",
-        onPress: async () => {
-          dispatch(signOut()), navigation.navigate("LoaderScreen");
+        onPress: async () => {         
+          dispatch(signOut());
+          navigation.navigate("LoaderScreen");
           await AsyncStorage.removeItem("token");
         },
       },
@@ -110,6 +95,7 @@ const ListScreen = ({
         body={item.body}
         datetime={item.datetime}
         noteId={item.id}
+        userName={userData?.full_name ?? ""}
       />
     )) ?? [];
 
@@ -172,16 +158,22 @@ const ListScreen = ({
                   <Text
                     style={{ color: "#fff", textAlign: "center", fontSize: 20 }}
                   >
-                    Nenhuma nota a ser exibida.
+                    {searchBar !== ""
+                      ? "Nenhuma nota encontrada."
+                      : "Nenhuma nota a ser exibida."}
                   </Text>
-                  <Button
-                    variant="contained"
-                    color="#fff"
-                    title="Adicionar nova nota"
-                    onPress={() => {
-                      navigation.navigate("CreateNote");
-                    }}
-                  />
+                  {searchBar == "" ? (
+                    <Button
+                      variant="contained"
+                      color="#fff"
+                      title="Adicionar nova nota"
+                      onPress={() => {
+                        navigation.navigate("CreateNote");
+                      }}
+                    />
+                  ) : (
+                    <></>
+                  )}
                 </View>
               )
             ) : (

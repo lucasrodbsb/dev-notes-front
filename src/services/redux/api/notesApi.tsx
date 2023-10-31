@@ -1,14 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { storage } from "../../mmkv";
 import { Note } from "../../../types/notesTypes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const notesApi = createApi({
   reducerPath: "notesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://localhost:3001/`,
-    prepareHeaders: (headers) => {
-      const token = storage.getString("token");
-      if (token !== undefined) {
+    baseUrl: `http://192.168.118.156:3001/`,
+    
+    prepareHeaders: async (headers) => {
+      const token = await AsyncStorage.getItem("token");
+      if (!!token) {
         headers.set("x-access-token", token as string);
       }
       return headers;

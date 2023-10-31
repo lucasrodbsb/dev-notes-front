@@ -1,9 +1,17 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://localhost:3001/`, //ipexterno ifconfig
+    baseUrl: `http://192.168.118.156:3001/`,
+    prepareHeaders: async (headers) => {
+      const token = await AsyncStorage.getItem("token");
+      if (!!token) {
+        headers.set("x-access-token", token as string);
+      }
+      return headers;
+    },
   }),
   endpoints: (builder) => ({
     loginUser: builder.mutation<
@@ -38,6 +46,15 @@ export const authApi = createApi({
           body,
         };
       },
+    }),
+
+    getUserData: builder.query<{}, number>({
+      query: (note_id) => ({
+        url: `notes/get/${note_id}`,
+        method: "GET",
+        
+      }),
+      providesTags: [],
     }),
   }),
 });

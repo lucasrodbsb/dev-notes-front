@@ -14,7 +14,7 @@ export type StackNavigation = {
 
 export type StackTypes = NativeStackNavigationProp<StackNavigation>;
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<StackNavigation>();
 
 const LoaderStack = () => {
   const userData = useAppSelector((store) => store.authReducer?.user);
@@ -28,6 +28,7 @@ const LoaderStack = () => {
         component={LoaderScreen}
         options={{
           title: "LoaderScreen",
+          gestureEnabled: false
         }}
       />
       <Stack.Screen
@@ -35,6 +36,7 @@ const LoaderStack = () => {
         component={DrawerNavigation}
         options={{
           title: "LogedScreen",
+          gestureEnabled: false
         }}
       />
       <Stack.Screen
@@ -42,6 +44,7 @@ const LoaderStack = () => {
         component={AuthStack}
         options={{
           title: "LoginScreen",
+          gestureEnabled: false
         }}
       />
     </Stack.Navigator>

@@ -7,6 +7,7 @@ import {
   ScrollView,
   SafeAreaView,
   TextInput,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { PropsWithChildren, RefObject } from "react";
 import Header from "../../components/Header";
@@ -28,9 +29,14 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { StackNavigation } from "../../stacks/MainStack";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { StatusBar } from "expo-status-bar";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Colors, useTheme, useThemeMode } from "@rneui/themed";
+import { Theme } from "@rneui/base";
 
-const EditNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) => {
-
+const EditNoteScreen = ({
+  navigation,
+  route,
+}: NativeStackScreenProps<StackNavigation>) => {
   const drawerNavigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
 
   type FormData = {
@@ -78,8 +84,8 @@ const EditNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigation>
       note_id: route.params?.note_id ?? 0,
       user_id: userData?.user_Id ?? 0,
       datetime: moment().valueOf(),
-      noteBody: data.noteBody,
-      title: data.title,
+      noteBody: data.noteBody.trim(),
+      title: data.title.trim(),
     })
       .unwrap()
       .then((response) => {
@@ -109,113 +115,135 @@ const EditNoteScreen = ({ navigation, route }: StackScreenProps<StackNavigation>
       });
   };
 
+  const { theme, updateTheme } = useTheme();
+  const { mode, setMode } = useThemeMode();
+
   return (
     <>
-    <StatusBar style="light" />
-      <Header
-        title={"Editar nota"}
-        openDrawer={() => drawerNavigation.openDrawer()}
-      />
-      <ScrollView
-        style={{ backgroundColor: "#141414" }}
-        contentContainerStyle={{ paddingTop: 20 }}
-        bounces={false}
-      >
-        <SafeAreaView style={styles.container}>
-          {/* <Button title={'Editar Nota'} color='#fff' style={{width: 150}} onPress={()=> navigation.navigate("EditNote")}/> */}
-          <FormProvider {...methods}>
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  // placeholder="Título da nota"
-                  label="Título:"
-                  labelStyle={{ padding: 5, color: "#fff", fontWeight: "500" }}
-                  InputComponent={TextInput}
-                  inputStyle={{
-                    color: "white",
-                    backgroundColor: "#282828",
-                    borderRadius: 10,
-                    padding: 15,
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                  }}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  errorStyle={{ color: "#f16868" }}
-                  errorMessage={errors.title?.message}
-                  inputContainerStyle={{ borderColor: "transparent" }}
-                  containerStyle={{ paddingHorizontal: 0 }}
-                />
-              )}
-              name="title"
-            />
-            <Controller
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  // placeholder="Corpo da nota"
-                  label="Corpo:"
-                  labelStyle={{ padding: 5, color: "#fff", fontWeight: "500" }}
-                  secureTextEntry={false}
-                  InputComponent={TextInput}
-                  style={{
-                    height: 400,
-                    backgroundColor: "#282828",
-                    borderRadius: 10,
-                    marginHorizontal: 0,
-                  }}
-                  inputStyle={{
-                    color: "white",
-                    padding: 15,
-                    paddingTop: 10,
-                    paddingBottom: 10,
-                  }}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  errorStyle={{ color: "#f16868" }}
-                  errorMessage={errors.noteBody?.message}
-                  multiline={true}
-                  inputContainerStyle={{ borderColor: "transparent" }}
-                  containerStyle={{ paddingHorizontal: 0 }}
-                />
-              )}
-              name="noteBody"
-            />
-            <Button
-              color="#fff"
-              style={{ marginTop: 20 }}
-              title={"Salvar nota"}
-              onPress={handleSubmit(submitForm)}
-              variant="contained"
-            />
-            <Button
-              color="#fff"
-              style={{ marginTop: 50 }}
-              title={"Voltar"}
-              onPress={() => {
-                methods.reset();
-                navigation.goBack();
-              }}
-              variant="text"
-            />
-          </FormProvider>
-          {/* <Button title={"Voltar"} onPress={() => navig.goBack()} /> */}
-        </SafeAreaView>
-      </ScrollView>
+      <StatusBar style={mode == "dark" ? "light" : "dark"} />
+       
+        <ScrollView
+          style={{ backgroundColor: theme.colors.secondary }}
+          contentContainerStyle={{ paddingTop: 20 }}
+          contentInsetAdjustmentBehavior="automatic"
+        >
+          
+          <SafeAreaView style={styles(theme).container}>
+            <FormProvider {...methods}>
+            <KeyboardAvoidingView behavior="position"></KeyboardAvoidingView>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Título:"
+                    labelStyle={{
+                      padding: 5,
+                      color: theme.colors.textSecondary,
+                      fontWeight: "500",
+                    }}
+                    InputComponent={TextInput}
+                    inputStyle={styles(theme).inputStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    errorStyle={{ color: theme.colors.error }}
+                    errorMessage={errors.title?.message}
+                    inputContainerStyle={{ borderColor: "transparent" }}
+                    containerStyle={{ paddingHorizontal: 0 }}
+                  />
+                )}
+                name="title"
+              />
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Corpo:"
+                    labelStyle={{
+                      padding: 5,
+                      color: theme.colors.textSecondary,
+                      fontWeight: "500",
+                    }}
+                    secureTextEntry={false}
+                    InputComponent={TextInput}
+                    inputStyle={styles(theme).textAreaStyle}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    errorStyle={{ color: theme.colors.error }}
+                    errorMessage={errors.noteBody?.message}
+                    multiline={true}
+                    inputContainerStyle={{ borderColor: "transparent" }}
+                    containerStyle={{ paddingHorizontal: 0 }}
+                  />
+                )}
+                name="noteBody"
+              />
+
+              <Button
+                color={theme.colors.tintColor}
+                style={{ marginTop: 20 }}
+                title={"Salvar nota"}
+                onPress={handleSubmit(submitForm)}
+                variant="contained"
+              />
+            </FormProvider>
+          </SafeAreaView>
+        </ScrollView>
     </>
   );
 };
 
 export default EditNoteScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#141414",
-    paddingHorizontal: 15,
-    paddingBottom: 15,
-  },
-});
+const styles = (
+  theme: {
+    colors: Colors;
+  } & Theme
+) =>
+  StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      paddingHorizontal: 15,
+      paddingBottom: 15,
+    },
+    textAreaStyle: {
+      borderColor: theme.colors.divider,
+      borderWidth: 0.5,
+      color: theme.colors.text,
+      backgroundColor: theme.colors.primary,
+      borderRadius: 10,
+      padding: 15,
+      paddingTop: 10,
+      paddingBottom: 10,
+      minHeight: 200,
+      height: 400,
+      marginHorizontal: 0,
+      shadowColor: theme.colors.divider,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    inputStyle: {
+      borderColor: theme.colors.divider,
+      borderWidth: 0.5,
+      color: theme.colors.text,
+      padding: 15,
+      paddingTop: 10,
+      paddingBottom: 10,
+      backgroundColor: theme.colors.primary,
+      borderRadius: 10,
+      shadowColor: theme.colors.divider,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+  });

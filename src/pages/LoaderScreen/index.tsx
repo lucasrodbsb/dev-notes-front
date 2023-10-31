@@ -10,30 +10,36 @@ import jwtDecode from "jwt-decode";
 import { setUserData, User } from "../../services/redux/slices/authSlice";
 import { StackScreenProps } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useTheme, useThemeMode } from "@rneui/themed";
 
-const LoaderScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) => {
-  const navigate = useNavigation<StackTypes>();
+const LoaderScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const dispatch = useAppDispatch();
 
   useFocusEffect(() => {
-    let activeToken = storage.getString("token");
-    let decoded: User;
-
-    if (activeToken == undefined) {
-      navigate.navigate("LoginScreen");
-    } else {
-      decoded = jwtDecode(activeToken);
-      dispatch(setUserData(decoded));
-      navigate.navigate("LogedScreen");
-    }
+    (async ()=>{
+      let activeToken = await AsyncStorage.getItem("token");
+      if(!!!activeToken){
+        navigation.navigate("LoginScreen");
+      } else {
+        let decoded: User = jwtDecode(activeToken) ?? ""
+        dispatch(setUserData(decoded))
+        navigation.navigate("LogedScreen")
+      }
+    })()
   });
+
+  const {mode, setMode} = useThemeMode()
+  const {theme, updateTheme} = useTheme()
 
   return (
     <>
-      <View style={{ backgroundColor: "#141414", height: "100%" }}>
-      <StatusBar style="light" />
+    <StatusBar style={mode == 'dark' ? 'light' : 'dark' } />
+      <View style={{ backgroundColor: theme.colors.primary, height: "100%" }}>
+      
         <SafeAreaView style={styles.container}>
           <View
             style={{
@@ -45,7 +51,7 @@ const LoaderScreen = ({ navigation, route }: StackScreenProps<StackNavigation>) 
               alignItems: "center",
             }}
           >
-            <ActivityIndicator size={"large"} color="#ffd52e" />
+            <ActivityIndicator size={"large"} color={mode == 'light' ? theme.colors.text : theme.colors.tintColor}/>
           </View>
         </SafeAreaView>
       </View>
@@ -58,9 +64,6 @@ export default LoaderScreen;
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#141414",
-    // backgroundColor: "#4a1313",
-
     paddingHorizontal: 15,
     paddingBottom: 15,
   },

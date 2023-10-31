@@ -10,6 +10,7 @@
     "ts:check": "tsc"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^4.5.1",
     "@hookform/resolvers": "^3.3.1",
     "@react-native-async-storage/async-storage": "^1.18.2",
     "@react-native-material/core": "^1.3.7",
@@ -21,7 +22,9 @@
     "@rneui/themed": "^4.0.0-rc.8",
     "async-storage": "^0.1.0",
     "expo": "~49.0.8",
+    "expo-clipboard": "~4.3.1",
     "expo-dev-client": "~2.4.10",
+    "expo-sharing": "~11.5.0",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "jwt-decode": "^3.1.2",

@@ -31,17 +31,6 @@ export const authSlice = createSlice({
         user: undefined,
       };
     },
-
-    // teste: (state, action: PayloadAction<{ name: string; token: string }>) => {
-    //   return {
-    //     data: [
-    //       {
-    //         name: action.payload.name,
-    //         token: action.payload.token
-    //       }
-    //     ]
-    //   }
-    // }
   },
 });
 

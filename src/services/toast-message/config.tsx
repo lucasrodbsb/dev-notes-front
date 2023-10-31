@@ -1,7 +1,7 @@
-import Toast, {BaseToast} from "react-native-toast-message"
+import {BaseToast, BaseToastProps} from "react-native-toast-message"
 
 export const toastConfig = {
-    success: (props: any) => (
+    success: (props: BaseToastProps) => (
     <BaseToast
       {...props}
       style={{ borderLeftColor: 'green', backgroundColor: '#202020' }}
@@ -13,7 +13,7 @@ export const toastConfig = {
       }}
     />
   ),
-  error: (props: any) => (
+  error: (props: BaseToastProps) => (
     <BaseToast
       {...props}
       style={{ borderLeftColor: 'red', backgroundColor: '#202020' }}

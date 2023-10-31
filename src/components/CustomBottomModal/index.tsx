@@ -1,3 +1,5 @@
+import { Theme, Colors } from "@rneui/base";
+import { useTheme } from "@rneui/themed";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -13,15 +15,16 @@ type Props = {
   show: boolean;
   close: () => void;
   children: JSX.Element | JSX.Element[] | undefined;
-  bgColor: string;
 };
 
-const CustomBottomModal = ({ show, close, bgColor, children }: Props) => {
+const CustomBottomModal = ({ show, close, children }: Props) => {
   const [state, setState] = useState({
     opacity: new Animated.Value(0),
     container: new Animated.Value(height),
     modal: new Animated.Value(height),
   });
+
+  const {theme, updateTheme} = useTheme()
 
   const [isOverlayOpen, setIsOverlayOpen] = React.useState<boolean>(false);
 
@@ -101,7 +104,7 @@ const CustomBottomModal = ({ show, close, bgColor, children }: Props) => {
     >
       <Animated.View
         style={[
-          styles.container,
+          styles(theme).container,
           {
             opacity: state.opacity,
             transform: [{ translateY: state.container }],
@@ -110,14 +113,14 @@ const CustomBottomModal = ({ show, close, bgColor, children }: Props) => {
       >
         <Animated.View
           style={[
-            styles.modal,
+            styles(theme).modal,
             {
               transform: [{ translateY: state.modal }],
-              backgroundColor: bgColor,
+              backgroundColor: theme.colors.primary,
             },
           ]}
         >
-          <View style={styles.indicator} />
+          <View style={styles(theme).indicator} />
           {children}
         </Animated.View>
       </Animated.View>
@@ -125,11 +128,12 @@ const CustomBottomModal = ({ show, close, bgColor, children }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
+const styles = (theme: {
+  colors: Colors
+} & Theme) => StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    backgroundColor: "rgb(255, 255, 255)",
     position: "absolute",
   },
   modal: {
@@ -144,7 +148,7 @@ const styles = StyleSheet.create({
   indicator: {
     width: 50,
     height: 5,
-    backgroundColor: "#cccccc45",
+    backgroundColor: theme.colors.divider,
     borderRadius: 50,
     alignSelf: "center",
     marginTop: 10,

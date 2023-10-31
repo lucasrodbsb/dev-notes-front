@@ -7,7 +7,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Button } from "@react-native-material/core";
 import Note from "../../components/Note";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SpeedDial, Input, Tile, Text } from "@rneui/themed";
+import { SpeedDial, Input, Tile, Text, useThemeMode, useTheme, Colors } from "@rneui/themed";
 import React, { PropsWithChildren, RefObject } from "react";
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import * as yup from "yup";
@@ -15,6 +15,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { StatusBar } from "expo-status-bar";
 import { useAddNewUserMutation } from "../../services/redux/api/authApi";
 import Toast from "react-native-toast-message";
+import { Theme } from "@rneui/base";
 
 const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
 
@@ -177,12 +178,15 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
       });
   };
 
+  const {mode, setMode} = useThemeMode()
+  const {theme, updateTheme} = useTheme()
+
   return (
-    <ScrollView style={{ backgroundColor: "#141414", height: "100%" }}>
-      <StatusBar style="light" />
-      <SafeAreaView style={styles.container}>
-        <View style={styles.formContainer}>
-          <Text h4 h4Style={styles.title}>
+    <ScrollView style={{ backgroundColor: theme.colors.primary, height: "100%" }}>
+      <StatusBar style={mode == 'dark' ? 'light' : 'dark' } />
+      <SafeAreaView style={styles(theme).container}>
+        <View style={styles(theme).formContainer}>
+          <Text h4 h4Style={styles(theme).title}>
             Preencha seus dados:
           </Text>
           <FormProvider {...methods}>
@@ -193,12 +197,12 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                   placeholder="Nome Completo"
                   ref={fullnameInput}
                   InputComponent={TextInput}
-                  inputStyle={{ color: "white" }}
+                  inputStyle={{ color: theme.colors.text }}
                   rightIcon={
                     methods.watch("fullname")?.length ? (
                       <Icon
                         name="close"
-                        color="#ffffff42"
+                        color={theme.colors.text}
                         size={20}
                         onPress={() => {
                           methods.resetField("fullname");
@@ -208,11 +212,11 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                       <></>
                     )
                   }
-                  leftIcon={<Icon name="account" color="#fff" size={20} />}
+                  leftIcon={<Icon name="account" color={theme.colors.text} size={20} />}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  errorStyle={{ color: "#f16868" }}
+                  errorStyle={{ color: theme.colors.error}}
                   errorMessage={errors.fullname?.message}
                 />
               )}
@@ -225,12 +229,12 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                   placeholder="Email"
                   ref={fullnameInput}
                   InputComponent={TextInput}
-                  inputStyle={{ color: "white" }}
+                  inputStyle={{ color: theme.colors.text }}
                   rightIcon={
                     methods.watch("email")?.length ? (
                       <Icon
                         name="close"
-                        color="#ffffff42"
+                        color={theme.colors.text}
                         size={20}
                         onPress={() => {
                           methods.resetField("email");
@@ -240,11 +244,11 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                       <></>
                     )
                   }
-                  leftIcon={<Icon name="email" color="#fff" size={20} />}
+                  leftIcon={<Icon name="email" color={theme.colors.text} size={20} />}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  errorStyle={{ color: "#f16868" }}
+                  errorStyle={{ color: theme.colors.error }}
                   errorMessage={errors.email?.message}
                 />
               )}
@@ -257,12 +261,12 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                   placeholder="Login"
                   ref={usernameInput}
                   InputComponent={TextInput}
-                  inputStyle={{ color: "white" }}
+                  inputStyle={{ color: theme.colors.text }}
                   rightIcon={
                     methods.watch("username")?.length ? (
                       <Icon
                         name="close"
-                        color="#ffffff42"
+                        color={theme.colors.text}
                         size={20}
                         onPress={() => {
                           methods.resetField("username");
@@ -273,12 +277,12 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                     )
                   }
                   leftIcon={
-                    <Icon name="account-outline" color="#fff" size={20} />
+                    <Icon name="account-outline" color={theme.colors.text} size={20} />
                   }
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  errorStyle={{ color: "#f16868" }}
+                  errorStyle={{ color: theme.colors.error }}
                   errorMessage={errors.username?.message}
                 />
               )}
@@ -292,12 +296,12 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                   secureTextEntry={getStateByName("password")?.state}
                   ref={passwordInput}
                   InputComponent={TextInput}
-                  inputStyle={{ color: "white" }}
+                  inputStyle={{ color: theme.colors.text }}
                   rightIcon={
                     methods.watch("password")?.length ? (
                       <Icon
                         name="eye"
-                        color="#ffffff42"
+                        color={theme.colors.text}
                         size={20}
                         onPress={() =>
                           handleTextFieldsType({
@@ -310,11 +314,11 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                       <></>
                     )
                   }
-                  leftIcon={<Icon name="lock-outline" color="#fff" size={20} />}
+                  leftIcon={<Icon name="lock-outline" color={theme.colors.text} size={20} />}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  errorStyle={{ color: "#f16868" }}
+                  errorStyle={{ color: theme.colors.error }}
                   errorMessage={errors.password?.message}
                 />
               )}
@@ -328,12 +332,12 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                   secureTextEntry={getStateByName("confirmPassword")?.state}
                   ref={confirmPasswordInput}
                   InputComponent={TextInput}
-                  inputStyle={{ color: "white" }}
+                  inputStyle={{ color: theme.colors.text }}
                   rightIcon={
                     methods.watch("confirmPassword")?.length ? (
                       <Icon
                         name="close"
-                        color="#ffffff42"
+                        color={theme.colors.text}
                         size={20}
                         onPress={() => {
                           methods.resetField("confirmPassword");
@@ -343,18 +347,18 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
                       <></>
                     )
                   }
-                  leftIcon={<Icon name="lock" color="#fff" size={20} />}
+                  leftIcon={<Icon name="lock" color={theme.colors.text} size={20} />}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  errorStyle={{ color: "#f16868" }}
+                  errorStyle={{ color: theme.colors.error }}
                   errorMessage={errors.confirmPassword?.message}
                 />
               )}
               name="confirmPassword"
             />
             <Button
-              color="#fff"
+              color={theme.colors.tintColor}
               style={{ marginTop: 25 }}
               title={"Cadastrar"}
               onPress={handleSubmit(submitForm)}
@@ -368,7 +372,9 @@ const SignInScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
 
 export default SignInScreen;
 
-const styles = StyleSheet.create({
+const styles = (theme: {
+  colors: Colors
+} & Theme) => StyleSheet.create({
   container: {
     paddingHorizontal: 15,
     paddingBottom: 15,
@@ -379,45 +385,15 @@ const styles = StyleSheet.create({
   },
 
   formContainer: {
-    // backgroundColor: "#503838",
     borderRadius: 7,
     width: "100%",
     paddingTop: 30,
   },
-
-  elevation: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
   title: {
-    color: "#ffffff",
+    color: theme.colors.text,
     textAlign: "center",
     marginBottom: 30,
-    // fontVariant: ["small-caps"],
     fontWeight: "400",
-  },
-
-  subtitle: {
-    fontWeight: "400",
-    color: "#ffd52e",
-  },
+  }
 });
 
-// React.useEffect(()=>{
-//     const promessa = new Promise<void>((resolve, reject)=>{
-//         setTimeout(function(){ }, 3000);
-//         if(new Date().valueOf() % 2 == 0){
-//             resolve()
-//         }else{
-//             reject()
-//         }
-//     })
-
-//     Promise.resolve(promessa).then(alert).catch(alert)
-//   })

@@ -15,6 +15,9 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { StackScreenProps } from "@react-navigation/stack";
 import { Avatar } from "react-native-elements";
 import { transparent } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
+import { useTheme, useThemeMode } from "@rneui/themed";
+import { HeaderButtonProps } from "@react-navigation/native-stack/lib/typescript/src/types";
+import { generateColor } from "../helpers";
 
 export type StackNavigation = {
   [key: string]: undefined | {
@@ -51,18 +54,20 @@ const MainStack = ({navigation, route}: StackScreenProps<StackNavigation>) => {
     }
   }
 
+  const {mode, setMode} = useThemeMode()
+  const {theme, updateTheme} = useTheme()
+
   const customHeader: NativeStackNavigationOptions = {
-    headerTintColor: "#fff",
+    headerTintColor: theme.colors.text,
     headerShown: true, 
     animation: 'simple_push',
     headerStyle: {
-      backgroundColor: '#282828',
+      backgroundColor: theme.colors.primary,
     },
     headerTitleStyle: {
       fontSize: 20
     },
-    headerBackTitleVisible: false,
-    headerRight: (props) => (<Icon name="menu" color="#fff" size={30} onPress={()=> drawerNavigation.openDrawer()}/> ),
+    headerBackTitleVisible: false
   }
 
   const listScreenOptions: NativeStackNavigationOptions = {
@@ -70,14 +75,16 @@ const MainStack = ({navigation, route}: StackScreenProps<StackNavigation>) => {
     title: `Olá, ${userData?.full_name.split(" ")[0]}`,
     headerLargeTitle: true,
     gestureEnabled: false,
-    headerLeft: (props) => {
+    headerRight: (props: HeaderButtonProps) => {
       return <Avatar 
         title={getInitialsFromFullName()}
-        size={35}
+        size={30}
         rounded
-        containerStyle={{ backgroundColor: "#3d4db7" }}
+        containerStyle={{ backgroundColor: generateColor(userData?.user_Id ?? 0) ?? theme.colors.primary}}
+        onPress={()=>{drawerNavigation.openDrawer()}}
       />
-    },
+    }
+
   }
 
   return (

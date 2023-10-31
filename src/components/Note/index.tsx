@@ -10,6 +10,9 @@ import { useNavigation } from "@react-navigation/native";
 import { StackTypes } from "../../stacks/MainStack";
 import CustomBottomModal from "../CustomBottomModal";
 import * as Clipboard from "expo-clipboard";
+import CustomModal from "../CustomModal";
+import { Colors, useTheme } from "@rneui/themed";
+import { Theme } from "react-native-elements";
 
 type Props = {
   title: string;
@@ -28,8 +31,14 @@ const Note = ({
   noteId,
   userName,
 }: Props) => {
-  const [isVisible, setIsVisible] = React.useState<boolean>(false);
+  const [isBottomModalVisible, setIsBottomModalVisible] =
+    React.useState<boolean>(false);
+
+  const [isModalVisible, setIsModalVisible] = React.useState<boolean>(false);
+
   const navig = useNavigation<StackTypes>();
+
+  const { theme, updateTheme } = useTheme();
 
   const [deleteNoteById, responseDeleteNoteById] = useDeleteNoteByIdMutation();
 
@@ -40,34 +49,46 @@ const Note = ({
   };
 
   return (
-    <View style={styles.noteContainer}>
-      <View style={styles.noteHeader}>
-        <Text numberOfLines={1} style={styles.noteTitle}>{title}</Text>
+    <View style={styles(theme).noteContainer}>
+      <View style={styles(theme).noteHeader}>
+        <Text
+          onPress={() => {
+            setIsModalVisible(!isModalVisible);
+          }}
+          numberOfLines={1}
+          style={styles(theme).noteTitle}
+          ellipsizeMode="tail"
+        >
+          {title}
+        </Text>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <View style={styles.noteBadge}>
+          <View style={styles(theme).noteBadge}>
             <Pressable style={{ borderRadius: 50 }}>
               <Icon
                 name="dots-horizontal"
                 size={20}
-                color="#414141"
+                color={theme.colors.noteTitleColor}
                 onPress={() => {
-                  setIsVisible(!isVisible);
+                  setIsBottomModalVisible(!isBottomModalVisible);
                 }}
               />
             </Pressable>
           </View>
         </View>
       </View>
-      <ScrollView style={styles.noteBody} contentInsetAdjustmentBehavior="scrollableAxes" bouncesZoom>
-        <Text>{body}</Text>
-        <View style={styles.noteBody.placeholder}></View>
+      <ScrollView
+        style={styles(theme).noteBody}
+        contentInsetAdjustmentBehavior="scrollableAxes"
+        bouncesZoom
+      >
+        <Text style={styles(theme).noteBodyText}>{body}</Text>
+        <View style={styles(theme).noteBody.placeholder}></View>
       </ScrollView>
       <CustomBottomModal
-        show={isVisible}
+        show={isBottomModalVisible}
         close={() => {
-          setIsVisible(!isVisible);
+          setIsBottomModalVisible(!isBottomModalVisible);
         }}
-        bgColor="#282828"
       >
         <View
           style={{
@@ -78,12 +99,12 @@ const Note = ({
         >
           <View style={{ gap: 5, marginBottom: 30, width: "100%" }}>
             <Text
-              style={{ textAlign: "center", color: "#ffffff", fontSize: 30 }}
+              style={{ textAlign: "center", color: theme.colors.text, fontSize: 30 }}
             >
               {title}
             </Text>
             <Text
-              style={{ color: "#ffffff80", fontSize: 15, textAlign: "center" }}
+              style={{ color: theme.colors.textSecondary, fontSize: 15, textAlign: "center" }}
             >
               {`${moment(datetime).format("DD/MM/YYYY - HH:mm:ss")}`}
             </Text>
@@ -91,20 +112,20 @@ const Note = ({
           <View style={{ gap: 15 }}>
             <Button
               title={"Editar"}
-              color="#fff"
+              color={theme.colors.tintColor}
               onPress={() => {
                 navig.navigate("EditNote", {
                   note_id: noteId,
                   note_body: body,
                   note_title: title,
                 });
-                setIsVisible(!isVisible);
+                setIsBottomModalVisible(!isBottomModalVisible);
               }}
               variant="contained"
             />
             <Button
               title="Copiar"
-              color="#ffffff"
+              color={theme.colors.text}
               onPress={() => {
                 copyTextToClipboard()
                   .then(() => {
@@ -113,7 +134,7 @@ const Note = ({
                       text1: "Êxito!",
                       text2: "Nota copiada para sua área de transferência.",
                     });
-                    setIsVisible(!isVisible);
+                    setIsBottomModalVisible(!isBottomModalVisible);
                   })
                   .catch(() => {
                     Toast.show({
@@ -124,10 +145,12 @@ const Note = ({
                   });
               }}
               variant="outlined"
+              contentContainerStyle={{backgroundColor: theme.colors.primary}}
+              
             />
             <Button
               title="Deletar"
-              color="red"
+              color={theme.colors.error}
               onPress={() => {
                 deleteNoteById({ note_id: +noteId ?? 0 })
                   .then(() => {
@@ -136,7 +159,7 @@ const Note = ({
                       text1: "Êxito!",
                       text2: "Nota deletada com sucesso.",
                     });
-                    setIsVisible(!isVisible);
+                    setIsBottomModalVisible(!isBottomModalVisible);
                   })
                   .catch(() => {
                     Toast.show({
@@ -153,67 +176,83 @@ const Note = ({
           </View>
         </View>
       </CustomBottomModal>
+      <CustomModal
+        show={isModalVisible}
+        close={() => {
+          setIsModalVisible(!isModalVisible);
+        }}
+        noteTitle={title}
+        noteBody={body}
+      >
+        <></>
+      </CustomModal>
     </View>
   );
 };
 
 export default Note;
 
-const styles = StyleSheet.create({
-  noteContainer: {
-    minHeight: 180,
-    minWidth: 140,
-    maxWidth: "49%",
-    flex: 0.5,
-    backgroundColor: "#282828",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  noteHeader: {
-    backgroundColor: "#ffd52e",
-    minHeight: 40,
-    minWidth: "100%",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 9,
-  },
-  noteTitle: {
-    color: "#414141",
-    fontWeight: "bold",
-    width: 130
-  },
-  noteBadge: {
-    height: 25,
-    width: 25,
-    backgroundColor: "#e5c02a",
-    borderRadius: 50,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-
-    text: {
-      color: "#414141",
+const styles = (
+  theme: {
+    colors: Colors;
+  } & Theme
+) =>
+  StyleSheet.create({
+    noteContainer: {
+      minHeight: 180,
+      minWidth: 140,
+      maxWidth: "49%",
+      flex: 0.5,
+      borderRadius: 10,
+      shadowColor: "#707070",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
     },
-  },
-  noteBody: {
-    backgroundColor: "#e4e4e4",
-    overflow: "scroll",
-    padding: 9,
-    maxHeight: 140,
-    flex: 1,
+    noteHeader: {
+      backgroundColor: theme.colors.tintColor,
+      minHeight: 40,
+      minWidth: "100%",
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 9,
+      borderBottomColor: theme.colors.divider,
+      borderBottomWidth: 0.2,
+      borderTopRightRadius: 10,
+      borderTopLeftRadius: 10,
+    },
+    noteTitle: {
+      color: theme.colors.noteTitleColor,
+      fontWeight: "bold",
+      width: 130,
+    },
+    noteBadge: {
+      height: 25,
+      width: 25,
+      backgroundColor: '#0000001e',
+      borderRadius: 50,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    noteBody: {
+      backgroundColor: theme.colors.noteBodyColor,
+      overflow: "scroll",
+      padding: 9,
+      maxHeight: 140,
+      flex: 1,
+      placeholder: { width: 20, height: 20 },
+      borderBottomRightRadius: 10,
+      borderBottomLeftRadius: 10,
+    },
+    noteBodyText: {
+      color: theme.colors.text,
+    },
+  });
 
-    placeholder: { width: 20, height: 20 },
-  },
-});
-
-{
-  /* <Skeleton
-animation="wave"
-width={185}
-skeletonStyle={{backgroundColor: '#3a3a3a' }}
-style={{backgroundColor: '#282828'}}
-height={180}
-/> */
-}

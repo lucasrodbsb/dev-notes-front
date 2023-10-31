@@ -5,6 +5,7 @@ import {
 } from "@react-navigation/drawer";
 import MainStack from "./MainStack";
 import SettingsScreen from "../pages/SettingsScreen";
+import CustomDrawer from "../components/CustomDrawer";
 
 type DrawerNavigationType = {
   [key: string]: undefined;
@@ -12,23 +13,23 @@ type DrawerNavigationType = {
 
 export type DrawerTypes = DrawerNavigationProp<DrawerNavigationType>;
 
-const Drawer = createDrawerNavigator();
+const Drawer = createDrawerNavigator<DrawerNavigationType>();
 
 const options = {
   headerShown: false,
-  drawerActiveBackgroundColor: "#ffffff",
-  drawerActiveTintColor: "#282828",
-  drawerInactiveTintColor: "#fff",
-  drawerInactiveBackgroundColor: "#ffffff28",
+  // drawerActiveBackgroundColor: "#ffffff",
+  // drawerActiveTintColor: "#282828",
+  // drawerInactiveTintColor: "#fff",
+  // drawerInactiveBackgroundColor: "#ffffff28",
 };
 
 const DrawerNavigation = () => {
   return (
     <Drawer.Navigator
       screenOptions={{
-        drawerStyle: { backgroundColor: "#282828" },
         drawerPosition: "right",
       }}
+      drawerContent={props => <CustomDrawer {...props} />}
     >
       <Drawer.Screen
         name="Home"

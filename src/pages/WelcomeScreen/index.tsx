@@ -4,7 +4,7 @@ import { StackNavigation, StackTypes } from "../../stacks/MainStack";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Button } from "@react-native-material/core";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Input, Text } from "@rneui/themed";
+import { Colors, Input, Text, ThemeMode, useTheme, useThemeMode } from "@rneui/themed";
 import React, { PropsWithChildren, RefObject } from "react";
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import * as yup from "yup";
@@ -17,6 +17,7 @@ import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackScreenProps } from "@react-navigation/stack";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Theme } from "@rneui/base";
 
 const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -31,6 +32,9 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
     email: string;
     password: string;
   };
+
+  const {theme, updateTheme} = useTheme()
+  const {mode, setMode} = useThemeMode()
 
   const inputSchema = yup.object().shape({
     email: yup
@@ -112,13 +116,13 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
   };
 
   return (
-    <View style={{ backgroundColor: "#141414", height: "100%" }}>
-      <StatusBar style="light" />
-      <SafeAreaView style={styles.container}>
-        <View style={styles.formContainer}>
-          <Text h1 h1Style={styles.title}>
+    <View style={{ backgroundColor: mode == 'dark' ? theme.colors.primary : "#ffffff", height: "100%" }}>
+      <StatusBar style={mode == 'dark' ? 'light' : 'dark' } />
+      <SafeAreaView style={styles(theme, mode).container}>
+        <View style={styles(theme, mode).formContainer}>
+          <Text h1 h1Style={styles(theme, mode).title}>
             Dev
-            <Text h1 h1Style={styles.subtitle}>
+            <Text h1 h1Style={styles(theme, mode).subtitle}>
               Notes.
             </Text>
           </Text>
@@ -130,12 +134,13 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
                   placeholder="Login"
                   ref={emailInput}
                   InputComponent={TextInput}
-                  inputStyle={{ color: "white" }}
+                  inputStyle={{ color: theme.colors.text }}
+                  cursorColor={theme.colors.text}
                   rightIcon={
                     methods.watch("email")?.length ? (
                       <Icon
                         name="close"
-                        color="#ffffff42"
+                        color={theme.colors.text}
                         size={20}
                         onPress={() => {
                           methods.resetField("email");
@@ -146,12 +151,12 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
                     )
                   }
                   leftIcon={
-                    <Icon name="account-outline" color="#fff" size={20} />
+                    <Icon name="account-outline" color={theme.colors.text} size={20} />
                   }
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  errorStyle={{ color: "#f16868" }}
+                  errorStyle={{ color: theme.colors.error }}
                   errorMessage={errors.email?.message}
                 />
               )}
@@ -165,12 +170,13 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
                   secureTextEntry={true}
                   ref={passwordInput}
                   InputComponent={TextInput}
-                  inputStyle={{ color: "white" }}
+                  inputStyle={{ color: theme.colors.text }}
+                  cursorColor={theme.colors.text}
                   rightIcon={
                     methods.watch("password")?.length ? (
                       <Icon
                         name="close"
-                        color="#ffffff42"
+                        color={theme.colors.text}
                         size={20}
                         onPress={() => {
                           methods.resetField("password");
@@ -180,25 +186,25 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
                       <></>
                     )
                   }
-                  leftIcon={<Icon name="lock" color="#fff" size={20} />}
+                  leftIcon={<Icon name="lock" color={theme.colors.text} size={20} />}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
-                  errorStyle={{ color: "#f16868" }}
+                  errorStyle={{ color: theme.colors.error }}
                   errorMessage={errors.password?.message}
                 />
               )}
               name="password"
             />
             <Button
-              color="#fff"
+              color={theme.colors.tintColor}
               style={{ marginTop: 25 }}
               title={"Entrar"}
               onPress={handleSubmit(submitForm)}
             />
           </FormProvider>
           <Text
-            style={styles.newAccountText}
+            style={styles(theme, mode).newAccountText}
             onPress={() => navigation.navigate("SignIn")}
           >
             Ainda não possui sua conta?
@@ -211,7 +217,9 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
 
 export default WelcomeScreen;
 
-const styles = StyleSheet.create({
+const styles = (theme: {
+  colors: Colors
+} & Theme, mode: ThemeMode) => StyleSheet.create({
   container: {
     paddingHorizontal: 15,
     paddingBottom: 15,
@@ -222,7 +230,6 @@ const styles = StyleSheet.create({
   },
 
   formContainer: {
-    // backgroundColor: "#503838",
     borderRadius: 7,
     width: "100%",
   },
@@ -238,7 +245,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   title: {
-    color: "#ffffff",
+    color: mode == 'dark' ? theme.colors.text : theme.colors.tintColor,
     textAlign: "center",
     marginBottom: 40,
     fontVariant: ["small-caps"],
@@ -247,11 +254,19 @@ const styles = StyleSheet.create({
 
   subtitle: {
     fontWeight: "400",
-    color: "#ffd52e",
+    color: mode == 'dark' ? theme.colors.tintColor : theme.colors.text,
+    shadowColor: "#707070",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 
   newAccountText: {
-    color: "#fff",
+    color:  theme.colors.text,
     textAlign: "center",
     marginTop: 50,
     fontSize: 15,

@@ -7,22 +7,19 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React from "react";
-import {
-  ParamListBase,
-  useNavigation,
-} from "@react-navigation/native";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { StackNavigation } from "../../stacks/MainStack";
 import { Button } from "@react-native-material/core";
 import Note from "../../components/Note";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Skeleton, SpeedDial } from "@rneui/themed";
+import { SpeedDial, useTheme } from "@rneui/themed";
 import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
 import { signOut } from "../../services/redux/slices/authSlice";
-import { storage } from "../../services/mmkv";
 import { useGetAllNotesByUserIDQuery } from "../../services/redux/api/notesApi";
 import { Avatar, SearchBar } from "react-native-elements";
 import Skeletons from "../../components/Skeletons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import {
   StackNavigationOptions,
   StackScreenProps,
@@ -32,13 +29,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Note as noteType } from "../../types/notesTypes";
 import { useController, useForm } from "react-hook-form";
-import { SearchBarCommands } from "react-native-screens";
+import { useThemeMode } from '@rneui/themed';
 
 const ListScreen = ({
   navigation,
   route,
 }: NativeStackScreenProps<StackNavigation>) => {
   const drawerNavigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
+  const { mode, setMode } = useThemeMode();
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const dispatch = useAppDispatch();
@@ -47,6 +45,7 @@ const ListScreen = ({
     []
   );
   const [searchBar, setSearchBar] = React.useState<string>("");
+  const { theme, updateTheme } = useTheme();
 
   const userData = useAppSelector((store) => store.authReducer.user);
 
@@ -58,9 +57,13 @@ const ListScreen = ({
         onChangeText: (event) => {
           setSearchBar(event.nativeEvent.text);
         },
+        tintColor: mode == 'dark' ? theme.colors.tintColor : theme.colors.text,
+        hideWhenScrolling: true,
+        textColor: theme.colors.text,
       },
+
     });
-  }, [navigation]);
+  }, [navigation, theme]);
 
   const {
     data: userNotes,
@@ -74,7 +77,7 @@ const ListScreen = ({
     return Alert.alert("Sair", "Tem certeza que deseja sair?", [
       {
         text: "Sim",
-        onPress: async () => {         
+        onPress: async () => {
           dispatch(signOut());
           navigation.navigate("LoaderScreen");
           await AsyncStorage.removeItem("token");
@@ -126,9 +129,9 @@ const ListScreen = ({
   }, [searchBar]);
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar style={mode == 'dark' ? 'light' : 'dark' } />
       <ScrollView
-        style={{ backgroundColor: "#141414" }}
+        style={{ backgroundColor: theme.colors.secondary }}
         contentInsetAdjustmentBehavior="automatic"
       >
         <SafeAreaView style={styles.container}>
@@ -156,7 +159,7 @@ const ListScreen = ({
                   }}
                 >
                   <Text
-                    style={{ color: "#fff", textAlign: "center", fontSize: 20 }}
+                    style={{ color: theme.colors.text, textAlign: "center", fontSize: 20 }}
                   >
                     {searchBar !== ""
                       ? "Nenhuma nota encontrada."
@@ -165,7 +168,7 @@ const ListScreen = ({
                   {searchBar == "" ? (
                     <Button
                       variant="contained"
-                      color="#fff"
+                      color={theme.colors.tintColor}
                       title="Adicionar nova nota"
                       onPress={() => {
                         navigation.navigate("CreateNote");
@@ -177,7 +180,7 @@ const ListScreen = ({
                 </View>
               )
             ) : (
-              <Text style={{ color: "#fff" }}>
+              <Text style={{ color: theme.colors.text }}>
                 Erro de conexão, favor logar novamente!
               </Text>
             )}
@@ -186,29 +189,40 @@ const ListScreen = ({
       </ScrollView>
       <SpeedDial
         isOpen={isOpen}
-        icon={{ name: "more-horiz", color: "#414141", type: "material" }}
-        openIcon={{ name: "more-vert", color: "#414141", type: "material" }}
+        icon={{ name: "more-horiz", color: theme.colors.noteTitleColor, type: "material" }}
+        openIcon={{ name: "more-vert", color: theme.colors.noteTitleColor, type: "material" }}
         onOpen={() => setIsOpen(!isOpen)}
         onClose={() => setIsOpen(!isOpen)}
-        color={"#ffd52e"}
+        color={theme.colors.tintColor}
+        style={{
+          shadowColor: "#707070",
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 5,
+        }}
+        overlayColor="#00000042"
       >
         <SpeedDial.Action
-          icon={{ name: "logout", color: "#414141" }}
+          icon={{ name: "logout", color: theme.colors.noteTitleColor }}
           title="Sair"
           onPress={() => {
             handleLogOut();
             setIsOpen(false);
           }}
-          color={"#ffd52e"}
+          color={theme.colors.tintColor}
         />
         <SpeedDial.Action
-          icon={{ name: "add", color: "#414141" }}
+          icon={{ name: "add", color: theme.colors.noteTitleColor }}
           title="Criar Nota"
           onPress={() => {
             navigation.navigate("CreateNote");
             setIsOpen(false);
           }}
-          color={"#ffd52e"}
+          color={theme.colors.tintColor}
         />
       </SpeedDial>
     </>
@@ -220,7 +234,6 @@ export default ListScreen;
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#141414",
     paddingHorizontal: 15,
     paddingBottom: 15,
   },

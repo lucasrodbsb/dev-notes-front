@@ -12,6 +12,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useTheme, useThemeMode } from "@rneui/themed";
 
 const LoaderScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
 
@@ -31,10 +32,14 @@ const LoaderScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
     })()
   });
 
+  const {mode, setMode} = useThemeMode()
+  const {theme, updateTheme} = useTheme()
+
   return (
     <>
-      <View style={{ backgroundColor: "#141414", height: "100%" }}>
-      <StatusBar style="light" />
+    <StatusBar style={mode == 'dark' ? 'light' : 'dark' } />
+      <View style={{ backgroundColor: theme.colors.primary, height: "100%" }}>
+      
         <SafeAreaView style={styles.container}>
           <View
             style={{
@@ -46,7 +51,7 @@ const LoaderScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigat
               alignItems: "center",
             }}
           >
-            <ActivityIndicator size={"large"} color="#ffd52e" />
+            <ActivityIndicator size={"large"} color={mode == 'light' ? theme.colors.text : theme.colors.tintColor}/>
           </View>
         </SafeAreaView>
       </View>
@@ -59,8 +64,6 @@ export default LoaderScreen;
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#141414",
-
     paddingHorizontal: 15,
     paddingBottom: 15,
   },

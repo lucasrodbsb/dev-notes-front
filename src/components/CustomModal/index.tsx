@@ -1,9 +1,12 @@
+import { ThemeConsumer, useTheme, Theme, Colors } from "@rneui/themed";
 import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
   Animated,
   Dimensions,
+  Text,
+  ScrollView,
 } from "react-native";
 import { Overlay } from "react-native-elements";
 
@@ -12,143 +15,126 @@ const { height } = Dimensions.get("window");
 type Props = {
   show: boolean;
   close: () => void;
-  children: JSX.Element | JSX.Element[] | undefined;
-  bgColor: string;
+  children?: JSX.Element | JSX.Element[] | undefined;
+  noteTitle: string;
+  noteBody: string;
 };
 
-const CustomModal = ({ show, close, bgColor, children }: Props) => {
-  const [state, setState] = useState({
-    opacity: new Animated.Value(0),
-    container: new Animated.Value(height),
-    modal: new Animated.Value(height),
-  });
-
+const CustomModal = ({ show, close, noteBody, noteTitle }: Props) => {
   const [isOverlayOpen, setIsOverlayOpen] = React.useState<boolean>(false);
-
-  const closingOverlay = () => {
-    setTimeout(() => {
-      setIsOverlayOpen(false);
-    }, 120);
-  };
-
-  const openModal = () => {
-    Animated.sequence([
-      Animated.timing(state.container, {
-        toValue: 0,
-        duration: 0,
-        useNativeDriver: true,
-      }),
-      Animated.timing(state.opacity, {
-        toValue: 1,
-        duration: 0,
-        useNativeDriver: true,
-      }),
-      Animated.spring(state.modal, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 10,
-      }),
-    ]).start();
-  };
-
-  const closeModal = () => {
-    Animated.sequence([
-      Animated.timing(state.modal, {
-        toValue: height,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(state.opacity, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(state.container, {
-        toValue: height,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    closingOverlay();
-  };
-
-  React.useEffect(() => {
-    if (show) {
-      setIsOverlayOpen(true);
-      openModal();
-    } else {
-      closeModal();
-    }
-  }, [show]);
+  const { theme, updateTheme } = useTheme();
 
   return (
     <Overlay
-      isVisible={isOverlayOpen}
+      isVisible={show}
       onBackdropPress={close}
       overlayStyle={{
-        width: "100%",
-        display: "flex",
-        position: "absolute",
         alignItems: "center",
         justifyContent: "center",
-        bottom: 0,
         padding: 0,
+        backgroundColor: "#ffffff7",
+        width: "90%",
+        paddingHorizontal: 0,
+        paddingVertical: 0,
+        height: "70%",
+        borderRadius: 50,
       }}
       backdropStyle={{
-        backgroundColor: '#00000042'
-    }}
+        backgroundColor: "#00000073",
+      }}
+      transparent={true}
+      animationType="fade"
     >
-      <Animated.View
-        style={[
-          styles.container,
-          {
-            opacity: state.opacity,
-            transform: [{ translateY: state.container }],
-          },
-        ]}
-      >
-        <Animated.View
-          style={[
-            styles.modal,
-            {
-              transform: [{ translateY: state.modal }],
-              backgroundColor: bgColor,
-            },
-          ]}
-        >
-          <View style={styles.indicator} />
-          {children}
-        </Animated.View>
+      <Animated.View style={[styles(theme).container]}>
+        <View style={styles(theme).noteContainer}>
+          <View
+            style={[
+              styles(theme).noteHeader,
+            ]}
+          >
+            <Text
+              style={styles(theme).noteTitle}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {noteTitle}
+            </Text>
+          </View>
+          <ScrollView
+            style={styles(theme).noteBody}
+            contentInsetAdjustmentBehavior="scrollableAxes"
+            bouncesZoom
+          >
+            <Text style={styles(theme).noteBodyText}>{noteBody.trim()}</Text>
+            <View style={styles(theme).noteBody.placeholder}></View>
+          </ScrollView>
+        </View>
       </Animated.View>
     </Overlay>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgb(255, 255, 255)",
-    position: "absolute",
-  },
-  modal: {
-    bottom: 0,
-    position: "absolute",
-    width: "100%",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingLeft: 25,
-    paddingRight: 25,
-  },
-  indicator: {
-    width: 50,
-    height: 5,
-    backgroundColor: "#cccccc45",
-    borderRadius: 50,
-    alignSelf: "center",
-    marginTop: 10,
-  },
-});
+const styles = (
+  theme: {
+    colors: Colors;
+  } & Theme
+) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      display: "flex",
+      height: "100%",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    noteContainer: {
+      height: "100%",
+      width: "100%",
+      borderRadius: 10,
+      overflow: "hidden",
+    },
+    noteHeader: {
+      backgroundColor: theme.colors.tintColor,
+      minHeight: 60,
+      minWidth: "100%",
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 9,
+      borderBottomColor: theme.colors.divider,
+      borderBottomWidth: .2,
+    },
+    noteTitle: {
+      color: theme.colors.noteTitleColor,
+      fontWeight: "bold",
+      width: "100%",
+      fontSize: 20,
+      textAlign: "center",
+    },
+    noteBadge: {
+      height: 25,
+      width: 25,
+      backgroundColor: "#e5c02a",
+      borderRadius: 50,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    noteBody: {
+      backgroundColor: theme.colors.noteBodyColor,
+      overflow: "scroll",
+      padding: 15,
+      flex: 1,
+      placeholder: { width: 20, height: 20 },
+    },
+    noteBodyText: {
+      fontSize: 16,
+      textAlign: "justify",
+      textDecorationLine: "underline",
+      textDecorationColor: "#00000020",
+      color: theme.colors.text,
+    },
+  });
 
 export default CustomModal;

@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const notesApi = createApi({
   reducerPath: "notesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://192.168.118.156:3001/`,
+    baseUrl: `http://192.168.118.146:3001/`,
     
     prepareHeaders: async (headers) => {
       const token = await AsyncStorage.getItem("token");
@@ -38,6 +38,13 @@ export const notesApi = createApi({
     deleteNoteById: builder.mutation<void, { note_id: number }>({
       query: ({ note_id }) => ({
         url: `notes/delete/${note_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Notes"],
+    }),
+    deleteAllNotesByUserId: builder.mutation<void, { user_id: number }>({
+      query: ({ user_id }) => ({
+        url: `notes/delete-all/${user_id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Notes"],
@@ -80,4 +87,5 @@ export const {
   useDeleteNoteByIdMutation,
   useAddNoteMutation,
   useEditNoteByIdMutation,
+  useDeleteAllNotesByUserIdMutation
 } = notesApi;

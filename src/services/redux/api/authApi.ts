@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://192.168.118.156:3001/`,
+    baseUrl: `http://192.168.118.146:3001/`,
     prepareHeaders: async (headers) => {
       const token = await AsyncStorage.getItem("token");
       if (!!token) {
@@ -17,11 +17,11 @@ export const authApi = createApi({
     loginUser: builder.mutation<
       { token: string },
       {
-        email: string;
+        username: string;
         password: string;
       }
     >({
-      query: (body: { email: string; password: string }) => {
+      query: (body: { username: string; password: string }) => {
         return {
           url: "auth/authenticate-user",
           method: "POST",
@@ -47,16 +47,13 @@ export const authApi = createApi({
         };
       },
     }),
-
-    getUserData: builder.query<{}, number>({
-      query: (note_id) => ({
-        url: `notes/get/${note_id}`,
-        method: "GET",
-        
-      }),
-      providesTags: [],
+    deleteUserByUserId: builder.mutation<void, { user_id: number }>({
+      query: ({ user_id }) => ({
+        url: `user/delete/${user_id}`,
+        method: "DELETE",
+      })
     }),
   }),
 });
 
-export const { useLoginUserMutation, useAddNewUserMutation } = authApi;
+export const { useLoginUserMutation, useAddNewUserMutation, useDeleteUserByUserIdMutation } = authApi;

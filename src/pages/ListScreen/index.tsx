@@ -29,7 +29,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Note as noteType } from "../../types/notesTypes";
 import { useController, useForm } from "react-hook-form";
-import { useThemeMode } from '@rneui/themed';
+import { useThemeMode } from "@rneui/themed";
+import { LinearGradient } from "expo-linear-gradient";
 
 const ListScreen = ({
   navigation,
@@ -57,11 +58,10 @@ const ListScreen = ({
         onChangeText: (event) => {
           setSearchBar(event.nativeEvent.text);
         },
-        tintColor: mode == 'dark' ? theme.colors.tintColor : theme.colors.text,
+        tintColor: mode == "dark" ? theme.colors.tintColor : theme.colors.text,
         hideWhenScrolling: true,
         textColor: theme.colors.text,
       },
-
     });
   }, [navigation, theme]);
 
@@ -129,7 +129,7 @@ const ListScreen = ({
   }, [searchBar]);
   return (
     <>
-      <StatusBar style={mode == 'dark' ? 'light' : 'dark' } />
+      <StatusBar style={mode == "dark" ? "light" : "dark"} />
       <ScrollView
         style={{ backgroundColor: theme.colors.secondary }}
         contentInsetAdjustmentBehavior="automatic"
@@ -159,7 +159,11 @@ const ListScreen = ({
                   }}
                 >
                   <Text
-                    style={{ color: theme.colors.text, textAlign: "center", fontSize: 20 }}
+                    style={{
+                      color: theme.colors.text,
+                      textAlign: "center",
+                      fontSize: 20,
+                    }}
                   >
                     {searchBar !== ""
                       ? "Nenhuma nota encontrada."
@@ -187,10 +191,26 @@ const ListScreen = ({
           </View>
         </SafeAreaView>
       </ScrollView>
+      <LinearGradient
+        colors={
+          mode == "dark"
+            ? ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 1)"]
+            : ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255)"]
+        }
+        style={{ position: "absolute", bottom: 0, height: 90, width: "100%" }}
+      ></LinearGradient>
       <SpeedDial
         isOpen={isOpen}
-        icon={{ name: "more-horiz", color: theme.colors.noteTitleColor, type: "material" }}
-        openIcon={{ name: "more-vert", color: theme.colors.noteTitleColor, type: "material" }}
+        icon={{
+          name: "more-horiz",
+          color: theme.colors.noteTitleColor,
+          type: "material",
+        }}
+        openIcon={{
+          name: "more-vert",
+          color: theme.colors.noteTitleColor,
+          type: "material",
+        }}
         onOpen={() => setIsOpen(!isOpen)}
         onClose={() => setIsOpen(!isOpen)}
         color={theme.colors.tintColor}
@@ -207,15 +227,6 @@ const ListScreen = ({
         overlayColor="#00000042"
       >
         <SpeedDial.Action
-          icon={{ name: "logout", color: theme.colors.noteTitleColor }}
-          title="Sair"
-          onPress={() => {
-            handleLogOut();
-            setIsOpen(false);
-          }}
-          color={theme.colors.tintColor}
-        />
-        <SpeedDial.Action
           icon={{ name: "add", color: theme.colors.noteTitleColor }}
           title="Criar Nota"
           onPress={() => {
@@ -224,6 +235,7 @@ const ListScreen = ({
           }}
           color={theme.colors.tintColor}
         />
+        <></>
       </SpeedDial>
     </>
   );

@@ -4,7 +4,14 @@ import { StackNavigation, StackTypes } from "../../stacks/MainStack";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Button } from "@react-native-material/core";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Colors, Input, Text, ThemeMode, useTheme, useThemeMode } from "@rneui/themed";
+import {
+  Colors,
+  Input,
+  Text,
+  ThemeMode,
+  useTheme,
+  useThemeMode,
+} from "@rneui/themed";
 import React, { PropsWithChildren, RefObject } from "react";
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import * as yup from "yup";
@@ -19,9 +26,12 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Theme } from "@rneui/base";
 
-const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNavigation>) => {
+const WelcomeScreen = ({
+  navigation,
+  route,
+}: NativeStackScreenProps<StackNavigation>) => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  const emailInput = React.createRef() as RefObject<PropsWithChildren<any>>;
+  const usernameInput = React.createRef() as RefObject<PropsWithChildren<any>>;
   const passwordInput = React.createRef() as RefObject<PropsWithChildren<any>>;
 
   const userData = useAppSelector((store) => store.authReducer.user);
@@ -29,15 +39,15 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
   const dispatch = useAppDispatch();
 
   type FormData = {
-    email: string;
+    username: string;
     password: string;
   };
 
-  const {theme, updateTheme} = useTheme()
-  const {mode, setMode} = useThemeMode()
+  const { theme, updateTheme } = useTheme();
+  const { mode, setMode } = useThemeMode();
 
   const inputSchema = yup.object().shape({
-    email: yup
+    username: yup
       .string()
       .required("Valor inválido!")
       .min(3, "Mínimo de 3 caracteres!")
@@ -54,7 +64,7 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
     mode: "onChange",
     resolver: yupResolver(inputSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -81,7 +91,7 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
     let result;
 
     result = await loginUser({
-      email: data.email,
+      username: data.username,
       password: data.password,
     })
       .unwrap()
@@ -116,8 +126,13 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
   };
 
   return (
-    <View style={{ backgroundColor: mode == 'dark' ? theme.colors.primary : "#ffffff", height: "100%" }}>
-      <StatusBar style={mode == 'dark' ? 'light' : 'dark' } />
+    <View
+      style={{
+        backgroundColor: mode == "dark" ? theme.colors.primary : "#ffffff",
+        height: "100%",
+      }}
+    >
+      <StatusBar style={mode == "dark" ? "light" : "dark"} />
       <SafeAreaView style={styles(theme, mode).container}>
         <View style={styles(theme, mode).formContainer}>
           <Text h1 h1Style={styles(theme, mode).title}>
@@ -132,18 +147,18 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
                   placeholder="Login"
-                  ref={emailInput}
+                  ref={usernameInput}
                   InputComponent={TextInput}
                   inputStyle={{ color: theme.colors.text }}
                   cursorColor={theme.colors.text}
                   rightIcon={
-                    methods.watch("email")?.length ? (
+                    methods.watch("username")?.length ? (
                       <Icon
                         name="close"
                         color={theme.colors.text}
                         size={20}
                         onPress={() => {
-                          methods.resetField("email");
+                          methods.resetField("username");
                         }}
                       />
                     ) : (
@@ -151,16 +166,20 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
                     )
                   }
                   leftIcon={
-                    <Icon name="account-outline" color={theme.colors.text} size={20} />
+                    <Icon
+                      name="account-outline"
+                      color={theme.colors.text}
+                      size={20}
+                    />
                   }
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   errorStyle={{ color: theme.colors.error }}
-                  errorMessage={errors.email?.message}
+                  errorMessage={errors.username?.message}
                 />
               )}
-              name="email"
+              name="username"
             />
             <Controller
               control={control}
@@ -186,7 +205,9 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
                       <></>
                     )
                   }
-                  leftIcon={<Icon name="lock" color={theme.colors.text} size={20} />}
+                  leftIcon={
+                    <Icon name="lock" color={theme.colors.text} size={20} />
+                  }
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
@@ -217,58 +238,62 @@ const WelcomeScreen = ({ navigation, route }: NativeStackScreenProps<StackNaviga
 
 export default WelcomeScreen;
 
-const styles = (theme: {
-  colors: Colors
-} & Theme, mode: ThemeMode) => StyleSheet.create({
-  container: {
-    paddingHorizontal: 15,
-    paddingBottom: 15,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-
-  formContainer: {
-    borderRadius: 7,
-    width: "100%",
-  },
-
-  elevation: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
+const styles = (
+  theme: {
+    colors: Colors;
+  } & Theme,
+  mode: ThemeMode
+) =>
+  StyleSheet.create({
+    container: {
+      paddingHorizontal: 15,
+      paddingBottom: 15,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      flex: 1,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  title: {
-    color: mode == 'dark' ? theme.colors.text : theme.colors.tintColor,
-    textAlign: "center",
-    marginBottom: 40,
-    fontVariant: ["small-caps"],
-    fontWeight: "700",
-  },
 
-  subtitle: {
-    fontWeight: "400",
-    color: mode == 'dark' ? theme.colors.tintColor : theme.colors.text,
-    shadowColor: "#707070",
-    shadowOffset: {
-      width: 0,
-      height: 2,
+    formContainer: {
+      borderRadius: 7,
+      width: "100%",
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
 
-  newAccountText: {
-    color:  theme.colors.text,
-    textAlign: "center",
-    marginTop: 50,
-    fontSize: 15,
-  },
-});
+    elevation: {
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    title: {
+      color: mode == "dark" ? theme.colors.text : theme.colors.tintColor,
+      textAlign: "center",
+      marginBottom: 40,
+      fontVariant: ["small-caps"],
+      fontWeight: "700",
+    },
+
+    subtitle: {
+      fontWeight: "400",
+      color: mode == "dark" ? theme.colors.tintColor : theme.colors.text,
+      shadowColor: "#707070",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+
+    newAccountText: {
+      color: theme.colors.text,
+      textAlign: "center",
+      marginTop: 50,
+      fontSize: 15,
+    },
+  });

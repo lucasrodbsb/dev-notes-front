@@ -13,6 +13,7 @@ import * as Clipboard from "expo-clipboard";
 import CustomModal from "../CustomModal";
 import { Colors, useTheme } from "@rneui/themed";
 import { Theme } from "react-native-elements";
+import TouchableScale from "react-native-touchable-scale";
 
 type Props = {
   title: string;
@@ -25,7 +26,7 @@ type Props = {
 
 const Note = ({
   title = "Sem Título",
-  body = "Corpo da nota corpo da nota corpo da nota corpo da nota, Corpo da nota corpo da nota corpo da nota corpo da nota, Corpo da nota corpo da nota corpo da nota corpo da nota, Corpo da nota corpo da nota corpo da nota corpo da nota",
+  body = "Sem Conteúdo",
   count = 1,
   datetime,
   noteId,
@@ -84,6 +85,7 @@ const Note = ({
         <Text style={styles(theme).noteBodyText}>{body}</Text>
         <View style={styles(theme).noteBody.placeholder}></View>
       </ScrollView>
+
       <CustomBottomModal
         show={isBottomModalVisible}
         close={() => {
@@ -99,12 +101,20 @@ const Note = ({
         >
           <View style={{ gap: 5, marginBottom: 30, width: "100%" }}>
             <Text
-              style={{ textAlign: "center", color: theme.colors.text, fontSize: 30 }}
+              style={{
+                textAlign: "center",
+                color: theme.colors.text,
+                fontSize: 30,
+              }}
             >
               {title}
             </Text>
             <Text
-              style={{ color: theme.colors.textSecondary, fontSize: 15, textAlign: "center" }}
+              style={{
+                color: theme.colors.textSecondary,
+                fontSize: 15,
+                textAlign: "center",
+              }}
             >
               {`${moment(datetime).format("DD/MM/YYYY - HH:mm:ss")}`}
             </Text>
@@ -145,8 +155,7 @@ const Note = ({
                   });
               }}
               variant="outlined"
-              contentContainerStyle={{backgroundColor: theme.colors.primary}}
-              
+              contentContainerStyle={{ backgroundColor: theme.colors.primary }}
             />
             <Button
               title="Deletar"
@@ -235,7 +244,7 @@ const styles = (
     noteBadge: {
       height: 25,
       width: 25,
-      backgroundColor: '#0000001e',
+      backgroundColor: "#0000001e",
       borderRadius: 50,
       display: "flex",
       justifyContent: "center",
@@ -255,4 +264,3 @@ const styles = (
       color: theme.colors.text,
     },
   });
-

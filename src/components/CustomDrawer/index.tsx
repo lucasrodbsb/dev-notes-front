@@ -14,39 +14,39 @@ import { generateColor } from "../../helpers";
 const CustomDrawer = (props: DrawerContentComponentProps) => {
   const { theme, updateTheme } = useTheme();
   const { mode, setMode } = useThemeMode();
-  const userData = useAppSelector((store)=> store.authReducer.user);
+  const userData = useAppSelector((store) => store.authReducer.user);
 
-  const getInitialsFromFullName = (): string  => {
-    if(userData){
-      return userData.full_name.split(" ")[0][0] + (userData.full_name.split(" ")?.at(1)?.at(0) ?? "")
+  const getInitialsFromFullName = (): string => {
+    if (userData) {
+      return (
+        userData.full_name.split(" ")[0][0] +
+        (userData.full_name.split(" ")?.at(1)?.at(0) ?? "")
+      );
     } else {
-      return ""
+      return "";
     }
-  }
+  };
 
   return (
     <DrawerContentScrollView
       style={{ backgroundColor: theme.colors.primary }}
       {...props}
     >
-      <View
-        style={styles(theme).header}
-      >
-
-    <Avatar 
-        title={getInitialsFromFullName()}
-        size={100}
-        rounded
-        containerStyle={{ backgroundColor: generateColor(userData?.user_Id ?? 0)}}
-        titleStyle={{}}
-      />
-      <Text numberOfLines={1} style={styles(theme).loginText}>
-        {userData?.username}
-      </Text>
+      <View style={styles(theme).header}>
+        <Avatar
+          title={getInitialsFromFullName()}
+          size={100}
+          rounded
+          containerStyle={{
+            backgroundColor: generateColor(userData?.user_Id ?? 0),
+          }}
+          titleStyle={{}}
+        />
+        <Text numberOfLines={1} style={styles(theme).loginText}>
+          {userData?.username}
+        </Text>
       </View>
-      <Divider color={theme.colors.divider}/>
-
-      <DrawerItem label="Help" onPress={() => {}} />
+      <Divider style={styles(theme).divider} color={theme.colors.divider} />
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
   );
@@ -58,17 +58,20 @@ const styles = (
   theme: {
     colors: Colors;
   } & Theme
-) => StyleSheet.create({
+) =>
+  StyleSheet.create({
     header: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-        gap: 10
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20,
+      gap: 10,
     },
     loginText: {
-        fontSize: 25,
-        color: theme.colors.text,
-        textDecorationLine: "underline"
+      fontSize: 25,
+      color: theme.colors.text,
+    },
+    divider: {
+      marginBottom: 20
     }
-});
+  });
